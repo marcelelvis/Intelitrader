@@ -41,6 +41,3 @@ services:
         INTELITRADER_DB_NAME: dateusuario
         ASPNETCORE_ENVIRONMENT: Development
 
-networks:     
-    intelitrader_net:
-        driver: custom-driver-1

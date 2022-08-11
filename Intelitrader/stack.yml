@@ -1,0 +1,46 @@
+﻿# Use postgres/example user/password credentials
+version: '3.1'
+
+networks: 
+    intelitrader_net:
+        driver: bridge
+volumes: 
+    postgres_vol: {}
+    intelitrader_vol: {}
+
+services:
+
+  postgres_db: #Name que vai para a imagem criada
+    image: postgres #name image
+    networks:
+        - intelitrader_net
+    volumes:
+        - postgres_vol:/var/lib/postgresql
+
+    #restart: always
+    environment:
+      POSTGRES_PASSWORD: 7656 #postgres-password 
+      POSTGRES_DB: dateusuario #name database
+    ports:
+     - 5432:5432    
+
+  intelitrader: 
+    image: intelitrader
+    networks:
+        - intelitrader_net
+    volumes:
+        - intelitrader_vol:/var/lib/intelitrader
+    ports:
+        - 8000:8000
+        - 8001:80
+      
+    environment:
+        INTELITRADER_DB_HOST: db:5432
+        INTELITRADER_DB_USER: postgres
+        INTELITRADER_DB_PASSWORD: 7656
+        INTELITRADER_DB_NAME: dateusuario
+        ASPNETCORE_ENVIRONMENT: Development
+
+networks:     
+    intelitrader_net:
+        driver: custom-driver-1

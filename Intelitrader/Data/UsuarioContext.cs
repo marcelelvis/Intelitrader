@@ -18,7 +18,8 @@ namespace Intelitrader.Data
             usuario.HasKey(x => x.Id);
             usuario.Property(x => x.Id).ValueGeneratedOnAdd();
             usuario.Property(x => x.age).IsRequired();
-            usuario.HasData,
+            usuario.Property(x => x.creationDate).HasDefaultValueSql("now()");
+            
             
         }
     }

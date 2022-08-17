@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Intelitrader.Migrations
 {
     [DbContext(typeof(UsuarioContext))]
-    [Migration("20220806143021_initialCreate")]
-    partial class initialCreate
+    [Migration("20220817182339_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,17 +26,17 @@ namespace Intelitrader.Migrations
 
             modelBuilder.Entity("Intelitrader.Models.Usuario", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("text");
 
                     b.Property<int>("age")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("creationDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("firstName")
                         .IsRequired()

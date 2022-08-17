@@ -5,7 +5,7 @@ namespace Intelitrader.Repository
     public interface IUsuarioRepository
     {
         Task <IEnumerable<Usuario>> BuscaUsuarios();
-        Task<Usuario> BuscaUsuario(int id);
+        Task<Usuario> BuscaUsuario(string id);
         void AdicionaUsuario(Usuario usuario);
         void AtualizaUsuario(Usuario usuario);
         void DeleteUsuario(Usuario usuario);

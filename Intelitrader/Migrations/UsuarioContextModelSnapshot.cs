@@ -24,17 +24,17 @@ namespace Intelitrader.Migrations
 
             modelBuilder.Entity("Intelitrader.Models.Usuario", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("text");
 
                     b.Property<int>("age")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("creationDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("firstName")
                         .IsRequired()

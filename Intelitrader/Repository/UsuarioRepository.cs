@@ -18,7 +18,7 @@ namespace Intelitrader.Repository
             return await _context.Usuarios.ToListAsync();
         }
 
-        public async Task<Usuario> BuscaUsuario(int id)
+        public async Task<Usuario> BuscaUsuario(string id)
         {
             return await _context.Usuarios
                 .Where(x => x.Id == id).FirstOrDefaultAsync();

@@ -11,7 +11,7 @@ volumes:
 services:
 
   postgres_db: #Name que vai para a imagem criada
-    image: postgres #name image
+    image: postgres #nome imagem
     networks:
         - intelitrader_net
     volumes:

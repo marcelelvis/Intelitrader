@@ -4,23 +4,11 @@ using Intelitrader.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TesteIntelitrader
 {
     public class TesteUsuario
-    {
-        private readonly UsuarioRepository _UsuarioRepository;
-        private readonly UsuarioController _usuarioController;
-        private readonly IUsuarioRepository _IUsuarioRepository;
-        
-        
-                
+    { 
 
         [Fact]
         public async Task getTeste_buscarUsuario_RetornaUsuarios()
@@ -47,13 +35,13 @@ namespace TesteIntelitrader
         {
             // Arrange = Iniciar variáveis 
             var userMock = new Mock<IUsuarioRepository>();
-            var resultadoEsperado = new string("Erro ao salvar usuário");
+            var resultadoEsperado = StatusCodes.Status400BadRequest;
             userMock.Setup(x => x.AdicionaUsuario(It.IsAny<Usuario>()));// Usuario            
             //Act = Invocar metodo para testar
             var usuarioController = new UsuarioController(userMock.Object);
-            var result = await usuarioController.Post(It.IsAny<Usuario>()) as ObjectResult;// Erro ao salvar usuario
+            var result = await usuarioController.Post(It.IsAny<Usuario>()) as ObjectResult;
             // Assert = Verificar ação            
-            Assert.Equal(result?.Value, resultadoEsperado);
+            Assert.Equal(resultadoEsperado, result?.StatusCode);
 
         }
         
@@ -65,17 +53,34 @@ namespace TesteIntelitrader
             var resultadoEsperado = StatusCodes.Status200OK;
             var usuario = new Usuario();
             var usuarioController = new UsuarioController(userMock.Object);
-            userMock
-                .Setup(x => x.SaveChangesAsync())
-                .ReturnsAsync(true);
+            userMock.Setup(x => x.SaveChangesAsync()).ReturnsAsync(true);
 
             //Act = Invocar metodo para testar
-            var result = await usuarioController.Post(usuario) as ObjectResult;// Erro ao salvar usuario
+            var result = await usuarioController.Post(usuario) as ObjectResult;
             // Assert = Verificar ação            
             Assert.Equal(resultadoEsperado, result?.StatusCode);
         }
 
-        
+        [Fact]
+        public async Task postTeste_SalvaUsuario_ErroSalvar()
+        {
+            // Arrange = Iniciar variáveis 
+            var userMock = new Mock<IUsuarioRepository>();
+            var resultadoEsperado = StatusCodes.Status400BadRequest;
+            var usuario = new Usuario();
+            var usuarioController = new UsuarioController(userMock.Object);
+            userMock
+                .Setup(x => x.SaveChangesAsync())
+                .ReturnsAsync(false);
+
+            //Act = Invocar metodo para testar
+            var result = await usuarioController.Post(usuario) as ObjectResult;
+            // Assert = Verificar ação            
+            Assert.Equal(resultadoEsperado, result?.StatusCode);
+
+        }
+
+
         [Fact]
         public async Task putTeste_AtualizaUsuario_ErroAtualizar()
         {
@@ -89,7 +94,7 @@ namespace TesteIntelitrader
                 .ReturnsAsync(true);
 
             //Act = Invocar metodo para testar
-            var result = await usuarioController.Put(1, usuario) as ObjectResult;// Erro ao salvar usuario
+            var result = await usuarioController.Put(Guid.NewGuid().ToString(), usuario) as ObjectResult;
             // Assert = Verificar ação            
             Assert.Equal(resultadoEsperado, result?.StatusCode);
 
@@ -107,10 +112,40 @@ namespace TesteIntelitrader
                 .Setup(x => x.SaveChangesAsync())
                 .ReturnsAsync(true);
             //Act = Invocar metodo para testar
-            var result = await usuarioController.Delete(1) as ObjectResult;// Erro ao salvar usuario
+            var result = await usuarioController.Delete(Guid.NewGuid().ToString()) as ObjectResult;
             // Assert = Verificar ação            
             Assert.Equal(resultadoEsperado, result?.StatusCode);
 
         }
+
+        [Fact]
+        public async Task GetUsuario_ID_invalido()
+        {
+            var userMock = new Mock<IUsuarioRepository>();
+            var exception = await Assert.ThrowsAsync<Exception>(() => new UsuarioController(userMock.Object).GetUsuario(""));
+
+            Assert.Equal("Id incorreto", exception.Message);
+        }
+
+
+        [Fact]
+        public async Task put_ID_invalido()
+        {
+            var userMock = new Mock<IUsuarioRepository>();
+            var usuario = new Usuario();
+            var exception = await Assert.ThrowsAsync<Exception>(() => new UsuarioController(userMock.Object).Put("", usuario));
+
+            Assert.Equal("Id incorreto", exception.Message);
+        }
+
+        [Fact]
+        public async Task delete_ID_invalido()
+        {
+            var userMock = new Mock<IUsuarioRepository>();            
+            var exception = await Assert.ThrowsAsync<Exception>(() => new UsuarioController(userMock.Object).Delete(""));
+
+            Assert.Equal("Id incorreto", exception.Message);
+        }
+
     }
 }

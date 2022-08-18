@@ -2,6 +2,7 @@
 using Intelitrader.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System.Text.Json;
 
 namespace Intelitrader.Controllers
 {
@@ -43,7 +44,7 @@ namespace Intelitrader.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(string id)
+        public async Task<IActionResult> GetUsuario(string id)
         {
             Log.Information("Rastreio - Get iniciado");
 
@@ -58,7 +59,7 @@ namespace Intelitrader.Controllers
             if (usuario != null)
             {
                 Log.Information("Rastreio - Get retornando usuarios");
-                return usuario;
+                return Ok(usuario);
             }
             else
             {
@@ -75,16 +76,16 @@ namespace Intelitrader.Controllers
             Log.Information("Rastreio - Post iniciado");
             _repository.AdicionaUsuario(usuario);
             bool result = await _repository.SaveChangesAsync();
-
+            
             if (result == false)
             {
                 Log.Information("Rastreio - Usuario nao adicionado");
                 return BadRequest("Usuario não adicionado");
             }
-
-
-            Log.Information("Rastreio - Usuario adicionado");
-            return Ok("Usuario adicionado");
+            
+            string dados = $"- Informações usuarios - {JsonSerializer.Serialize(usuario)}";
+            Log.Information("Rastreio - Usuario adicionado " + dados);
+            return Ok("Usuario adicionado - Id: " + usuario.Id);
 
            
                 
@@ -102,7 +103,7 @@ namespace Intelitrader.Controllers
                 throw new Exception("Id incorreto");
             }
 
-
+            
             var usuarioBanco = await _repository.BuscaUsuario(id);
             if (usuarioBanco == null) {
                 Log.Information("Rastreio - Usuario não encontrado");
@@ -120,8 +121,9 @@ namespace Intelitrader.Controllers
                 Log.Information("Rastreio - Usuario nao atualizado");
                 return BadRequest("Usuario não atualizado");
             }
-
-            Log.Information("Rastreio - Usuario atualizado");
+            string dados = $"Informações usuarios - {JsonSerializer.Serialize(usuario)}";
+            Log.Information("Rastreio - Usuario atualizado - " + dados);
+           
             return Ok("Usuario atualizado");
 
             
@@ -140,13 +142,13 @@ namespace Intelitrader.Controllers
             }
 
 
-
             var usuarioBanco = await _repository.BuscaUsuario(id);
             if (usuarioBanco == null) {
                 Log.Information("Rastreio - erro ao buscar usuario");
                 return NotFound("Usuario não encontrado"); 
-            } 
+            }
 
+            
             _repository.DeleteUsuario(usuarioBanco);
 
             bool result = await _repository.SaveChangesAsync();
@@ -156,8 +158,8 @@ namespace Intelitrader.Controllers
                 Log.Information("Rastreio - Usuario nao removido");
                 return BadRequest("Usuario não removido");
             }
-
-            Log.Information("Rastreio - Usuario removido");
+            string dados = $"Informações usuarios - {JsonSerializer.Serialize(usuarioBanco)}";
+            Log.Information("Rastreio - Usuario removido - " + dados);
             return Ok("Usuario removido");
         }
     }

@@ -16,5 +16,7 @@ namespace Intelitrader.Models
         public DateTime creationDate { get; private set; }
 
        
+
+       
     }
 }

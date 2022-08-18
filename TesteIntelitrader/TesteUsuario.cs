@@ -8,7 +8,36 @@ using Moq;
 namespace TesteIntelitrader
 {
     public class TesteUsuario
-    { 
+    {
+
+        [Fact]
+        public async Task getTeste_RegistroSaveGet_RetornaUsuarios()
+        {
+            // Arrange = Iniciar variáveis 
+            var userMock = new Mock<IUsuarioRepository>();
+            userMock.Setup(x => x.SaveChangesAsync()).ReturnsAsync(true);
+            var user = new Usuario() { firstName = "Marcel", age = 25};
+            var Registros = new List<Usuario>();
+            userMock.Setup(x => x.AdicionaUsuario(It.IsAny<Usuario>()))
+                .Callback((Usuario parametro) =>  Registros.Add(parametro) );
+
+            var resultadoEsperado = user;
+            userMock.Setup(x => x.BuscaUsuario(It.IsAny<string>()))
+                .ReturnsAsync((string parametro) => { return Registros.FirstOrDefault(x => x.Id == parametro); });
+
+            //Act = Invocar metodo para testar
+            var usuarioController = new UsuarioController(userMock.Object);
+            await usuarioController.Post(user);
+            var result = await usuarioController.GetUsuario(user.Id) as ObjectResult;
+
+
+            // Assert = Verificar ação            
+            Assert.Equal(result?.Value, resultadoEsperado);
+            
+        }
+
+
+
 
         [Fact]
         public async Task getTeste_buscarUsuario_RetornaUsuarios()
